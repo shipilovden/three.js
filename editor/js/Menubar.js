@@ -6,6 +6,7 @@ import { MenubarView } from './Menubar.View.js';
 import { MenubarHelp } from './Menubar.Help.js';
 import { MenubarStatus } from './Menubar.Status.js';
 import { MenubarScreenshot } from './Menubar.Screenshot.js'; // Новый импорт
+import { MenubarShaders } from './Menubar.Shaders.js'; // Импорт для Shaders
 
 function Menubar( editor ) {
 
@@ -19,6 +20,8 @@ function Menubar( editor ) {
     container.add( new MenubarHelp( editor ) );
 
     container.add( new MenubarScreenshot( editor ) ); // Добавляем новую кнопку Screenshot
+
+    container.add( new MenubarShaders( editor ) ); // Добавляем новую кнопку Shaders
 
     container.add( new MenubarStatus( editor ) );
 
