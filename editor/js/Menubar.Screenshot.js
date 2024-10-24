@@ -108,7 +108,7 @@ function MenubarScreenshot( editor ) {
         const canvas = renderer.domElement;
         canvas.toBlob(function(blob) {
             const formData = new FormData();
-            formData.append('chat_id', '________________'); // ID вашего канала
+            formData.append('chat_id', '-1002463785174'); // ID вашего канала
             formData.append('photo', blob, 'screenshot.png');
 
             fetch(`https://api.telegram.org/bot__________________/sendPhoto`, {

@@ -4,6 +4,12 @@
     right: 500px; /* отступ справа */
     z-index: 1000; /* поверх остальных элементов */
 }
+#gui-clouds-container {
+    position: absolute;
+    top: 10px;  /* отступ сверху */
+    left: 500px; /* отступ слева, чтобы разместить рядом с Sky */
+    z-index: 1000; /* поверх остальных элементов */
+}
 
 :root {
     color-scheme: light dark;
