@@ -12,7 +12,47 @@ _DEFAULT_CAMERA.name = 'Camera';
 _DEFAULT_CAMERA.position.set( 0, 5, 10 );
 _DEFAULT_CAMERA.lookAt( new THREE.Vector3() );
 
+function setupShadows(editor) {
+
+    // Создаем рендерер с поддержкой теней
+    const _RENDERER = new THREE.WebGLRenderer({ antialias: true });
+    _RENDERER.shadowMap.enabled = true;
+    _RENDERER.setSize(window.innerWidth, window.innerHeight);
+
+    // Поправляем этот блок: добавляем рендерер в DOM
+    const container = document.body; // Убедитесь, что это правильный DOM-элемент
+    if (container) {
+        container.appendChild(_RENDERER.domElement);  // Проверяем, что domElement существует
+    } else {
+        console.error("Container element is missing.");
+    }
+
+    // Directional Light, которое отбрасывает тени
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(5, 10, 7.5);
+    directionalLight.castShadow = true;
+    editor.scene.add(directionalLight);
+
+    // Пример объекта, который отбрасывает тень
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
+    const cube = new THREE.Mesh(geometry, material);
+    cube.castShadow = true;  // Объект будет отбрасывать тень
+    cube.receiveShadow = true;  // Объект будет получать тень
+    editor.scene.add(cube);
+
+    // Настройки камеры и рендеринг сцены
+    const camera = editor.camera;
+    const scene = editor.scene;
+    function animate() {
+        requestAnimationFrame(animate);
+        _RENDERER.render(scene, camera);
+    }
+    animate();
+}
+
 function Editor() {
+
 
 	const Signal = signals.Signal; // eslint-disable-line no-undef
 

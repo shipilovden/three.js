@@ -32,31 +32,25 @@ function MenubarShaders( editor ) {
     // Обрабатываем включение/выключение чекбокса для Sky
     checkboxSky.onChange(function () {
         if ( this.getValue() === true ) {
-            // Создаём контейнер для неба (делаем его полноценным объектом для иерархии)
             skyContainer = new THREE.Object3D();
             skyContainer.name = 'Sky';
 
-            // Создаём небо
             const sky = new Sky();
             sky.scale.setScalar( 450000 );
-            skyContainer.add( sky );  // Добавляем небо в контейнер
+            skyContainer.add( sky );
 
-            // Настраиваем позицию солнца
             const sun = new THREE.Vector3();
             sun.x = 4000;
             sun.y = 800;
             sun.z = -500;
             sky.material.uniforms['sunPosition'].value.copy( sun );
 
-            // Добавляем контейнер с небом в сцену и иерархию
             editor.execute( new AddObjectCommand( editor, skyContainer ) );
 
-            // Создаём контейнер для GUI
             const guiContainer = document.createElement('div');
             guiContainer.id = 'gui-container';
             document.body.appendChild(guiContainer);
 
-            // Создаём GUI внутри этого контейнера
             gui = new dat.GUI({ autoPlace: false });
             guiContainer.appendChild(gui.domElement);
 
@@ -70,11 +64,10 @@ function MenubarShaders( editor ) {
                 exposure: 0.5
             };
 
-            // Добавляем настройки в GUI с обновлением сцены
             gui.add(skyParams, 'turbidity', 0, 20).onChange(() => {
                 sky.material.uniforms['turbidity'].value = skyParams.turbidity;
-                sky.material.needsUpdate = true;  // Обновляем шейдер
-                editor.signals.sceneGraphChanged.dispatch();  // Сообщаем редактору об изменении
+                sky.material.needsUpdate = true;
+                editor.signals.sceneGraphChanged.dispatch();
             });
 
             gui.add(skyParams, 'rayleigh', 0, 4).onChange(() => {
@@ -119,17 +112,50 @@ function MenubarShaders( editor ) {
             });
 
         } else {
-            // Убираем небо при выключении чекбокса
             if ( skyContainer ) {
-                editor.execute( new RemoveObjectCommand( editor, skyContainer ) );  // Удаляем контейнер
+                editor.execute( new RemoveObjectCommand( editor, skyContainer ) );
                 skyContainer = null;
             }
 
-            // Убираем GUI, если чекбокс снят
             if ( gui ) {
-                gui.destroy();  // Удаляем GUI
+                gui.destroy();
                 gui = null;
             }
+        }
+    });
+
+    // Добавляем пункт Shadows с чекбоксом
+    const optionShadows = new UIRow();
+    const checkboxShadows = new UICheckbox();
+    optionShadows.setClass( 'option' );
+    optionShadows.setTextContent( 'Shadows' );
+    optionShadows.add( checkboxShadows );
+    options.add( optionShadows );
+
+    checkboxShadows.onChange(function () {
+        if (this.getValue() === true) {
+            // Включаем рендеринг теней
+            editor.renderer.shadowMap.enabled = true;
+
+            editor.scene.traverse(function (object) {
+                if (object.isLight) {
+                    object.castShadow = true;  // Свет может отбрасывать тени
+                }
+                if (object.isMesh) {
+                    object.castShadow = true;  // Объект может отбрасывать тени
+                    object.receiveShadow = true;  // Объект может получать тени
+                }
+            });
+        } else {
+            // Отключаем рендеринг теней
+            editor.renderer.shadowMap.enabled = false;
+
+            editor.scene.traverse(function (object) {
+                if (object.isMesh) {
+                    object.castShadow = false;
+                    object.receiveShadow = false;
+                }
+            });
         }
     });
 

@@ -29,11 +29,27 @@ function MenubarScreenshot( editor ) {
     const camera = editor.camera;  // Убедитесь, что у вас есть камера
     const scene = editor.scene;    // Убедитесь, что у вас есть сцена
 
+    // Функция для обновления соотношения сторон камеры и размера рендера
+    function updateRendererSize() {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        
+        // Обновляем размеры рендерера
+        renderer.setSize(width, height);
+
+        // Обновляем соотношение сторон камеры и матрицу проекции
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+    }
+
     // Screenshot Button
     const screenshotOption = new UIRow();
     screenshotOption.setClass( 'option' );
     screenshotOption.setTextContent( 'Take Screenshot' );
     screenshotOption.onClick( function () {
+        // Обновляем размеры рендерера и камеры
+        updateRendererSize();
+
         // Рендер сцены перед созданием скриншота
         renderer.render(scene, camera);
 
@@ -54,9 +70,11 @@ function MenubarScreenshot( editor ) {
     fullscreenOption.onClick( function () {
         if (document.fullscreenElement === null) {
             document.documentElement.requestFullscreen().then(() => {
+                updateRendererSize();  // Обновляем размеры при входе в полноэкранный режим
                 takeFullscreenScreenshot(renderer, scene, camera);
             });
         } else {
+            updateRendererSize();  // Обновляем размеры для полноэкранного скриншота
             takeFullscreenScreenshot(renderer, scene, camera);
         }
     });
@@ -67,6 +85,7 @@ function MenubarScreenshot( editor ) {
     telegramOption.setClass( 'option' );
     telegramOption.setTextContent( 'Send Screenshot to Telegram' );
     telegramOption.onClick( function () {
+        updateRendererSize();  // Обновляем размеры рендера перед отправкой
         sendScreenshotToTelegram(renderer, scene, camera);
     });
     options.add( telegramOption );
@@ -89,10 +108,10 @@ function MenubarScreenshot( editor ) {
         const canvas = renderer.domElement;
         canvas.toBlob(function(blob) {
             const formData = new FormData();
-            formData.append('chat_id', '-____________________________'); // ID вашего канала
+            formData.append('chat_id', '________________'); // ID вашего канала
             formData.append('photo', blob, 'screenshot.png');
 
-            fetch(`https://api.telegram.org/bot_________________________________/sendPhoto`, {
+            fetch(`https://api.telegram.org/bot__________________/sendPhoto`, {
                 method: 'POST',
                 body: formData
             })
@@ -111,7 +130,6 @@ function MenubarScreenshot( editor ) {
     }
 
     return container;
-
 }
 
 export { MenubarScreenshot };

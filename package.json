@@ -133,6 +133,7 @@
     "cannon": "^0.6.2",
     "dat.gui": "^0.7.9",
     "gsap": "^3.12.5",
+    "html2canvas": "^1.4.1",
     "socket.io": "^4.8.0",
     "socket.io-client": "^4.8.0",
     "stats.js": "^0.17.0",
